@@ -11,6 +11,7 @@ import Controladores.ConectarBD;
 import Controladores.CrearBDControlador;
 
 public class Principal {
+    private static Principal instance;
     public JFrame frame;
     private final JPanel leftPanel;
     private JMenuBar menuBar;
@@ -184,4 +185,11 @@ public class Principal {
         backButton.addActionListener(e -> displayDatabaseList(connection)); // Pasa la conexión
         return backButton;
     }
+    public static Principal getInstance() {
+        if (instance == null) {
+            instance = new Principal();
+        }
+        return instance;
+    }
+    
 }
