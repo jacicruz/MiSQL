@@ -14,6 +14,7 @@ public class Modelobd {
         con.connect(hust, port, user, pass);
         Connection si = con.getConnection(); {
         pri.displayDatabaseList(si);
+
     }
 }
 }

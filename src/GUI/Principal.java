@@ -103,6 +103,7 @@ public class Principal {
         controlador.getClass();
         ConectarBD pan = new ConectarBD(conectarPanel);
         pan.getClass();
+
     }
 
     private JMenuItem createMenuItem(String label) {
