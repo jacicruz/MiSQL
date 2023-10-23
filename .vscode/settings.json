@@ -1,0 +1,10 @@
+{
+    "java.project.sourcePaths": ["src"],
+    "java.project.outputPath": "bin",
+    "java.project.referencedLibraries": [
+        "lib/**/*.jar",
+        "c:\\Users\\wwwja\\OneDrive\\Documentos\\NetBeansProjects\\Interfaz\\dist\\lib\\MiPropioMySQL.jar",
+        "c:\\Users\\wwwja\\OneDrive\\Documentos\\NetBeansProjects\\Interfaz\\dist\\lib\\mysql-connector-j-8.0.33.jar"
+    ],
+    "java.debug.settings.onBuildFailureProceed": true
+}
