@@ -1,23 +1,18 @@
 package GUI;
-
 import java.awt.*;
 import java.awt.event.*;
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-
+import Conector.Conexion;
+import java.sql.DatabaseMetaData;
 import javax.swing.*;
-
-import com.mysql.cj.jdbc.DatabaseMetaData;
-
 import Controladores.ConectarBD;
 import Controladores.CrearBDControlador;
-import Modelo.Modelobd;
 
 public class Principal {
     public JFrame frame;
-    private final JPanel leftPanel; 
+    private final JPanel leftPanel;
     private JMenuBar menuBar;
     private JMenu menu;
     private JPanel mainPanel;
@@ -25,7 +20,7 @@ public class Principal {
     private ConectarPanel conectarPanel;
     private CrearBDPanel crearBdPanel;
     private CrearTablas crearTablasPanel;
-    Modelobd bd = new Modelobd();
+    Conexion conec = new Conexion();
     JTextArea displayArea = new JTextArea(20, 40);
 
     public Principal() {
@@ -121,83 +116,72 @@ public class Principal {
     }
 
     private void updateMainPanel(String selectedOption) {
-    CardLayout cardLayout = (CardLayout) mainPanel.getLayout();
-    cardLayout.show(mainPanel, selectedOption);
+        CardLayout cardLayout = (CardLayout) mainPanel.getLayout();
+        cardLayout.show(mainPanel, selectedOption);
     }
-        private void displayDatabaseList() {
-                try {
-                    ConectarBD bd = new ConectarBD(conectarPanel);
-                    Connection connection = bd.
-                    java.sql.DatabaseMetaData metaData = connection.getMetaData();
-                    ResultSet databases = metaData.getCatalogs();
-            
-                    JPanel databaseButtonsPanel = new JPanel();
-                    databaseButtonsPanel.setLayout(new GridLayout(0, 1));
-            
-                    displayArea.removeAll();  // Limpia el displayArea
-                    displayArea.setLayout(new BorderLayout());
-                    displayArea.add(new JScrollPane(databaseButtonsPanel), BorderLayout.CENTER);
-            
-                    while (databases.next()) {
-                        String dbName = databases.getString("TABLE_CAT");
-                        JButton dbButton = new JButton(dbName);
-                        dbButton.addActionListener(e -> {
-                            displayArea.setText("");  // Limpiar el contenido anterior
-                            displayArea.append("Base de datos seleccionada: " + dbName + "\n");
-                            displayTablesOfDatabase(dbName);
-                        });
-                        databaseButtonsPanel.add(dbButton);
-                    }
-            
-                    // Agrega el botón "Volver al listado de bases"
-                    JButton backButton = createBackButton();
-                    databaseButtonsPanel.add(backButton);
-            
-                    // Cierra la conexión
-                   
-            
-                    // Repinta la ventana para reflejar los cambios
-                    displayArea.revalidate();  
-            
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
+
+    public void displayDatabaseList(Connection connection) {
+        try {
+            DatabaseMetaData metaData = connection.getMetaData();
+            ResultSet databases = metaData.getCatalogs();
+
+            JPanel databaseButtonsPanel = new JPanel();
+            databaseButtonsPanel.setLayout(new GridLayout(0, 1));
+
+            displayArea.removeAll(); // Limpia el displayArea
+            displayArea.setLayout(new BorderLayout());
+            displayArea.add(new JScrollPane(databaseButtonsPanel), BorderLayout.CENTER);
+
+            while (databases.next()) {
+                String dbName = databases.getString("TABLE_CAT");
+                JButton dbButton = new JButton(dbName);
+                dbButton.addActionListener(e -> {
+                    displayArea.setText(""); // Limpiar el contenido anterior
+                    displayArea.append("Base de datos seleccionada: " + dbName + "\n");
+                    displayTablesOfDatabase(dbName, connection);
+                });
+                databaseButtonsPanel.add(dbButton);
             }
+            JButton backButton = createBackButton(connection);
+            databaseButtonsPanel.add(backButton);
 
-            private void displayTablesOfDatabase(String dbName) {
-    try {
-        Connection connection = DriverManager.getConnection("jdbc:mysql://" + host + ":" + puerto + "/" + dbName, usuario, contrasena);
-        java.sql.DatabaseMetaData metaData = connection.getMetaData();
-        ResultSet tables = metaData.getTables(dbName, null, "%", new String[] { "TABLE" });
+            displayArea.revalidate();
 
-        JPanel tablesPanel = new JPanel();
-        tablesPanel.setLayout(new GridLayout(0, 1));
-
-        displayArea.append("Tablas en la base de datos " + dbName + ":\n");
-        while (tables.next()) {
-            String tableName = tables.getString("TABLE_NAME");
-            JLabel tableLabel = new JLabel(tableName);
-            tablesPanel.add(tableLabel);
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
-        // Agrega el botón "Volver al listado de bases"
-        JButton backButton = createBackButton();
-        tablesPanel.add(backButton);
-
-        // Limpia el displayArea y agrega el panel con los nombres de las tablas
-        displayArea.removeAll();  
-        displayArea.setLayout(new BorderLayout());
-        displayArea.add(new JScrollPane(tablesPanel), BorderLayout.CENTER);
-        displayArea.revalidate(); 
-
-        // Cierra la conexión
-
-    } catch (SQLException e) {
-        e.printStackTrace();
     }
-}
- private JButton createBackButton() {
-                JButton backButton = new JButton("Volver al listado de bases");
-                backButton.addActionListener(e -> displayDatabaseList());
-                return backButton;
+
+    public void displayTablesOfDatabase(String dbName, Connection connection) {
+        try {
+            DatabaseMetaData metaData = connection.getMetaData();
+            ResultSet tables = metaData.getTables(dbName, null, "%", new String[] { "TABLE" });
+
+            JPanel tablesPanel = new JPanel();
+            tablesPanel.setLayout(new GridLayout(0, 1));
+
+            displayArea.append("Tablas en la base de datos " + dbName + ":\n");
+            while (tables.next()) {
+                String tableName = tables.getString("TABLE_NAME");
+                JLabel tableLabel = new JLabel(tableName);
+                tablesPanel.add(tableLabel);
             }
+            JButton backButton = createBackButton(connection);
+            tablesPanel.add(backButton);
+
+            displayArea.removeAll();
+            displayArea.setLayout(new BorderLayout());
+            displayArea.add(new JScrollPane(tablesPanel), BorderLayout.CENTER);
+            displayArea.revalidate();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private JButton createBackButton(Connection connection) {
+        JButton backButton = new JButton("Volver al listado de bases");
+        backButton.addActionListener(e -> displayDatabaseList(connection)); // Pasa la conexión
+        return backButton;
+    }
 }
