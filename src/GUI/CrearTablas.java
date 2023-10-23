@@ -56,4 +56,16 @@ public class CrearTablas extends JPanel {
                 .addGroup(crearTablasLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
                         .addComponent(cancelarTablaButton)));
     }
+
+    public JButton getCrearTablaButton() {
+        return crearTablaButton;
+    }
+
+    public JSpinner getCantidadColumnasSpinner() {
+        return cantidadColumnasSpinner;
+    }
+
+    public JTextField getNombreTablaTextField() {
+        return nombreTablaTextField;
+    }
 }

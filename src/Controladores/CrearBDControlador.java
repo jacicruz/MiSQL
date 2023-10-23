@@ -10,7 +10,6 @@ public class CrearBDControlador {
             public void actionPerformed(ActionEvent e){
                 String nombre = vista.getNombreTextField().getText();
                 if (!nombre.isEmpty()) {
-                    
                     JOptionPane.showMessageDialog(vista, "¡Base de datos '" + nombre + "' creada!");
                     vista.getNombreTextField().setText("");
                 } else {

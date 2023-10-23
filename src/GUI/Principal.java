@@ -9,6 +9,7 @@ import java.sql.DatabaseMetaData;
 import javax.swing.*;
 import Controladores.ConectarBD;
 import Controladores.CrearBDControlador;
+import Controladores.CrearTablasControlador;
 
 public class Principal {
     private static Principal instance;
@@ -103,6 +104,8 @@ public class Principal {
         controlador.getClass();
         ConectarBD pan = new ConectarBD(conectarPanel);
         pan.getClass();
+        CrearTablasControlador tab = new CrearTablasControlador(crearTablasPanel);
+        tab.getClass();
 
     }
 
